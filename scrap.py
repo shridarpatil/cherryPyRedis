@@ -9,7 +9,7 @@ from cherrypy.process.plugins import Monitor
 
 
 def background():
-	requests.get("http://127.0.0.1:8080")
+	requests.get("http://127.0.0.1:3000")
 	pass
 		
 def CORS():
@@ -71,7 +71,8 @@ if __name__ == '__main__':
 	
 	cherrypy.config.update({
                         'tools.CORS.on': True,
-                        #'server.socket_port': 3000  default port is 8080 you can chage default port number here
+			'server.socket_host':'0.0.0.0',
+                        'server.socket_port': 3000, # default port is 8080 you can chage default port number here
                        })
 	cherrypy.tools.CORS = cherrypy.Tool('before_handler', CORS)
 	Monitor(cherrypy.engine, background, frequency=30).subscribe()
