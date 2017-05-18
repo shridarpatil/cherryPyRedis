@@ -17,7 +17,7 @@ angular.module("zerodha")
 		$(document).ready(function() {
 
 			var username = 'zerodhaUrs'+$scope.getRandomSpan();
-			var websocket = 'ws://0.0.0.0:3000/ws?username='+username;
+			var websocket = 'ws://54.254.133.3:3000/ws?username='+username;
 			var ws ;
 			if (window.WebSocket) {
 				ws = new WebSocket(websocket, ['zerodha']);
