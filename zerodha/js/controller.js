@@ -55,6 +55,7 @@ angular.module("zerodha", [
           	var data = JSON.parse(evt.data)
           	$scope.topGainers = data.topGainers
           	$scope.topLosers = data.topLosers
+          	$scope.$apply();
              console.log($scope.topGainers)
           };
           ws.onopen = function() {
