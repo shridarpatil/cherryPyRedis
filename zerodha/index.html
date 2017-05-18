@@ -6,12 +6,10 @@
     
   </head>
   <body ng-app="zerodha" ng-controller="stockCtrl">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-
     <div id="mainbox">
       <div class="card" ng-repeat='data in topGainers'>
-
-        <h1 class="title" ng-bind='data.symbol'>
+        <h1 class="title">
+          <span ng-bind ='data.symbol'></span>
           <span class="up"><i class="fa fa-arrow-up" aria-hidden="true"></i></span>
           <span class="exdate">Latest Ex Date</span>
           <span class="date"  ng-bind='data.lastCorpAnnouncementDate'></span>
@@ -64,7 +62,8 @@
 
       <div class="card" ng-repeat='data in topLosers'>
 
-        <h1 class="title" ng-bind='data.symbol'>
+        <h1 class="title">
+          <span ng-bind ='data.symbol'></span>
           <span class="down"><i class="fa fa-arrow-down" aria-hidden="true"></i></span>
           <span class="exdate">Latest Ex Date</span>
           <span class="date"  ng-bind='data.lastCorpAnnouncementDate'></span>
@@ -111,19 +110,14 @@
             <span class=""  ng-bind='data.turnoverInLakhs'></span>
           </div>      
         </div> 
-
       </div>
-
     </div>
-
   </body>
-
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 
   <script src="https://cdn.rawgit.com/AngularClass/angular-websocket/v2.0.0/dist/angular-websocket.min.js"></script>
   <script src="js/app.js"></script>
   <script src="js/controller.js"></script>
   <script src="js/service.js"></script>
-
-
 </html>

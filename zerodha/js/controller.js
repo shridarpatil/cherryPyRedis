@@ -8,14 +8,12 @@ angular.module("zerodha")
 		stockService.getData(function(response){
 			$scope.topGainers = JSON.parse(response["topGainers"].replace(/'/g , "\""));
 			$scope.topLosers = JSON.parse(response["topLosers"].replace(/'/g , "\""));
-			console.log($scope.topGainers)
-			console.log($scope.topLosers)
 		});
 
 		$scope.getRandomSpan = function(){
 			return Math.floor((Math.random()*6)+1);
 		}
-		
+
 		$(document).ready(function() {
 
 			var username = 'zerodhaUrs'+$scope.getRandomSpan();
