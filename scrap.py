@@ -69,7 +69,7 @@ class ChatWebSocketHandler(WebSocket):
         
     def closed(self, code, reason="A client left the room without a proper explanation."):
         cherrypy.engine.publish('del-client', self.username)
-        cherrypy.engine.publish('websocket-broadcast', TextMessage(reason))
+        cherrypy.engine.publish('websocket-broadcast', reason)
 
 
 class Nifty50(object):

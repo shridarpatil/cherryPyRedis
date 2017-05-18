@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  
+</head>
+<body ng-app="zerodha" ng-controller="stockCtrl">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script> <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+  <script>
+  // var socket = io.connect('http://0.0.0.0:3000/ws?username=shri');
+
+  // // on connection to server, ask for user's name with an anonymous callback
+  // socket.on('connect', function(){
+  //   // call the server-side function 'adduser' and send one parameter (value of prompt)
+  //   socket.emit('add-client','shri');
+  // });
+
+
+  // $(document).ready(function() {
+
+  //         websocket = 'ws://0.0.0.0:3000/ws?username=shri';
+  //         if (window.WebSocket) {
+  //           ws = new WebSocket(websocket, ['mytest']);
+  //         }
+  //         else if (window.MozWebSocket) {
+  //           ws = MozWebSocket(websocket);
+  //         }
+  //         else {
+  //           console.log('WebSocket Not Supported');
+  //           return;
+  //         }
+
+  //         window.onbeforeunload = function(e) {
+  //           $('#chat').val($('#chat').val() + 'Bye bye...\\n');
+  //           ws.close(1000, '%(username)s left the room');
+
+  //           if(!e) e = window.event;
+  //           e.stopPropagation();
+  //           e.preventDefault();
+  //         };
+  //         ws.onmessage = function (evt) {
+  //            console.log(evt.data)
+  //         };
+  //         ws.onopen = function() {
+  //            ws.send("%(username)s entered the room");
+  //         };
+  //         ws.onclose = function(evt) {
+  //            $('#chat').val($('#chat').val() + 'Connection closed by server: ' + evt.code + ' \"' + evt.reason + '\"\\n');
+  //         };
+
+  //         $('#send').click(function() {
+  //            console.log($('#message').val());
+  //            ws.send('%(username)s: ' + $('#message').val());
+  //            $('#message').val("");
+  //            return false;
+  //         });
+  //       });
+
+  </script>
+  <div id="mainbox">
+    
+
+
+  <div class="card" ng-repeat='data in topGainers'>
+
+    <h1 class="title" >{{data.symbol}}
+      <span class="up"><i class="fa fa-arrow-up" aria-hidden="true"></i></span>
+      <span class="exdate">Latest Ex Date</span>
+      <span class="date"  ng-bind='data.lastCorpAnnouncementDate'></span>
+    </h1>
+    <div class="row">
+      <div class="left">
+        <span><strong>Open :</strong></span><span class="" ng-bind='data.openPrice'></span>
+      </div>
+      <div class="right">
+        <span><strong>LTP :</strong></span>
+        <span  ng-bind='data.ltp'></span>
+      </div>
+    </div>
+    <div class="row">
+      <!-- <div class="open">  <span><strong>Open :</strong></span><span class="" ng-bind='data.openPrice'></span></div> -->
+      <div class="left">  <span><strong>High :</strong></span><span class=""  ng-bind='data.highPrice'></span></div>
+
+      <div class="right">  <span><strong>Traded Qty : </strong></span>
+        <span class=""  ng-bind='data.tradedQuantity'></span> </div>
+      </div>
+
+      <div class="row">
+        <div class="left">
+         <span><strong>Low : </strong></span>
+         <span class="" ng-bind='data.lowPrice'></span>
+       </div>
+       <div class="right">  
+        <span><strong>%Change : </strong></span>
+        <span class=""  ng-bind='data.netPrice'></span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="left">
+       <span><strong>Prev. Close : </strong></span><span class=""  ng-bind='data.previousPrice'></span>
+
+     </div>
+     <div class="right">
+      <span><strong>Value(in Lakhs) : </strong></span>
+      <span class=""  ng-bind='data.turnoverInLakhs'></span>
+    </div>
+    
+  </div> 
+
+</div>
+
+
+
+  <div class="card" ng-repeat='data in topLosers'>
+
+    <h1 class="title" >{{data.symbol}}
+      <span class="down"><i class="fa fa-arrow-down" aria-hidden="true"></i></span>
+      <span class="exdate">Latest Ex Date</span>
+      <span class="date"  ng-bind='data.lastCorpAnnouncementDate'></span>
+    </h1>
+    <div class="row">
+      <div class="left">
+        <span><strong>Open :</strong></span><span class="" ng-bind='data.openPrice'></span>
+      </div>
+      <div class="right">
+        <span><strong>Latest Ex Date :</strong></span>
+        <span  ng-bind='data.lastCorpAnnouncementDate'></span>
+      </div>
+    </div>
+    <div class="row">
+      <!-- <div class="open">  <span><strong>Open :</strong></span><span class="" ng-bind='data.openPrice'></span></div> -->
+      <div class="left">  <span><strong>High :</strong></span><span class=""  ng-bind='data.highPrice'></span></div>
+
+      <div class="right">  <span><strong>Traded Qty : </strong></span>
+        <span class=""  ng-bind='data.tradedQuantity'></span> </div>
+      </div>
+
+      <div class="row">
+        <div class="left">
+         <span><strong>LTP : </strong></span>
+         <span class="" ng-bind='data.ltp'></span>
+       </div>
+       <div class="right">  
+        <span><strong>%Change : </strong></span>
+        <span class=""  ng-bind='data.netPrice'></span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="left">
+       <span><strong>Low: </strong></span><span class=""  ng-bind='data.lowPrice'></span>
+
+     </div>
+     <div class="right">
+      <span><strong>Value(in Lakhs) : </strong></span>
+      <span class=""  ng-bind='data.turnoverInLakhs'></span>
+    </div>
+    
+  </div> 
+
+</div>
+
+
+</div>
+
+</body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+
+<script src="https://cdn.rawgit.com/AngularClass/angular-websocket/v2.0.0/dist/angular-websocket.min.js"></script>
+<script src="js/app.js"></script>
+<script src="js/controller.js"></script>
+<script src="js/service.js"></script>
+
+
+</html>
