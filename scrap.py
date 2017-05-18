@@ -1,20 +1,76 @@
 import requests
 import redis
-import json, ast
+import json
 import cherrypy
 import collections
-from cherrypy.process.plugins import Monitor
+import cherrypy.process.plugins
+from ws4py.server.cherrypyserver import WebSocketPlugin, WebSocketTool
+from ws4py.websocket import WebSocket
 
 
-
-
+conn = redis.Redis('localhost')
 def background():
 	requests.get("http://127.0.0.1:3000")
 	pass
-		
+
+wd = cherrypy.process.plugins.BackgroundTask(15, background)
+wd.start()
+
+class ChatPlugin(WebSocketPlugin):
+  def __init__(self, bus):
+    WebSocketPlugin.__init__(self, bus)
+    self.clients = {}
+
+  def start(self):
+    WebSocketPlugin.start(self)
+    self.bus.subscribe('add-client', self.add_client)
+    self.bus.subscribe('get-client', self.get_client)
+    self.bus.subscribe('del-client', self.del_client)
+
+  def stop(self):
+    WebSocketPlugin.stop(self)
+    self.bus.unsubscribe('add-client', self.add_client)
+    self.bus.unsubscribe('get-client', self.get_client)
+    self.bus.unsubscribe('del-client', self.del_client)
+
+  def add_client(self, name, websocket):
+    self.clients[name] = websocket
+
+  def get_client(self, name):
+    return self.clients[name]
+
+  def del_client(self, name):
+    del self.clients[name]
+
+
 def CORS():
 	cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
 	pass
+
+
+class ChatWebSocketHandler(WebSocket):
+    def opened(self):
+        cherrypy.engine.publish('add-client', self.username, self)
+        
+    def received_message(self, m):
+        text = m.data
+        if text.find("@") == -1:
+            # echo to all
+            cherrypy.engine.publish('websocket-broadcast', m)
+        else:
+            # or echo to a single user
+            left, message = text.rsplit(':', 1)
+            print left
+            from_username, to_username = left.split('@')
+            print repr(from_username), repr(to_username), repr(self.username)
+            client = cherrypy.engine.publish('get-client', to_username.strip()).pop()
+            print client
+            client.send("@@%s: %s" % (from_username.strip()[:-1], message.strip()))
+        
+    def closed(self, code, reason="A client left the room without a proper explanation."):
+        cherrypy.engine.publish('del-client', self.username)
+        cherrypy.engine.publish('websocket-broadcast', TextMessage(reason))
+
 
 class Nifty50(object):
 
@@ -36,8 +92,8 @@ class Nifty50(object):
 			return data
 
 	def getData(self):
-		conn = redis.Redis('localhost')
-		self.conn = conn
+		
+		
 		topGainers = requests.get("https://www.nseindia.com/live_market/dynaContent/live_analysis/gainers/niftyGainers1.json").json()
 
 		topLosers = requests.get("https://www.nseindia.com/live_market/dynaContent/live_analysis/losers/niftyLosers1.json").json()
@@ -46,15 +102,23 @@ class Nifty50(object):
 		conn.hmset("topGainers", self.convert(topGainers))
 		conn.hmset("topLosers", self.convert(topLosers))
 
+		cherrypy.engine.publish('websocket-broadcast', json.dumps({"topGainers" : topGainers["data"], "topLosers" : topLosers["data"]}))
+
 		return "Data saved Successfully"
 
 	@cherrypy.expose
 	def displayData(self):
-		conn = redis.Redis('localhost')
+		
 		topLosers = conn.hgetall("topLosers")
 		topGainers = conn.hgetall("topGainers")
 	
 		return json.dumps({"topGainers" : topGainers["data"], "topLosers" : topLosers["data"]})
+
+	@cherrypy.expose
+	def ws(self, username):
+        # let's track the username we chose
+			cherrypy.request.ws_handler.username = username
+			cherrypy.log("Handler created: %s" % repr(cherrypy.request.ws_handler))
 	index.exposed = True
 
 if __name__ == '__main__':
@@ -66,14 +130,21 @@ if __name__ == '__main__':
         'tools.response_headers.on': True,
         'tools.CORS.on': True,
         'tools.response_headers.headers': [("Access-Control-Allow-Origin", "*")],
-        }
+        },
+    '/ws': {
+            'tools.websocket.on': True,
+            'tools.websocket.handler_cls': ChatWebSocketHandler,
+            'tools.websocket.protocols': ['zerodha']
+            },
     }
 	
 	cherrypy.config.update({
                         'tools.CORS.on': True,
-			'server.socket_host':'0.0.0.0',
+												'server.socket_host':'0.0.0.0',
                         'server.socket_port': 3000, # default port is 8080 you can chage default port number here
                        })
 	cherrypy.tools.CORS = cherrypy.Tool('before_handler', CORS)
-	Monitor(cherrypy.engine, background, frequency=30).subscribe()
+	ChatPlugin(cherrypy.engine).subscribe()
+	cherrypy.tools.websocket = WebSocketTool()
+	# Monitor(cherrypy.engine, background, frequency=30).subscribe()
 	cherrypy.quickstart(Nifty50(), '', conf)
