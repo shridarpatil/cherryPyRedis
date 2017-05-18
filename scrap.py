@@ -13,10 +13,10 @@ def background():
 	requests.get("http://127.0.0.1:3000")
 	pass
 
-wd = cherrypy.process.plugins.BackgroundTask(15, background)
+wd = cherrypy.process.plugins.BackgroundTask(300, background)
 wd.start()
 
-class ChatPlugin(WebSocketPlugin):
+class niftyWebSocketPlugin(WebSocketPlugin):
   def __init__(self, bus):
     WebSocketPlugin.__init__(self, bus)
     self.clients = {}
@@ -24,60 +24,27 @@ class ChatPlugin(WebSocketPlugin):
   def start(self):
     WebSocketPlugin.start(self)
     self.bus.subscribe('add-client', self.add_client)
-    self.bus.subscribe('get-client', self.get_client)
-    self.bus.subscribe('del-client', self.del_client)
 
   def stop(self):
     WebSocketPlugin.stop(self)
     self.bus.unsubscribe('add-client', self.add_client)
-    self.bus.unsubscribe('get-client', self.get_client)
-    self.bus.unsubscribe('del-client', self.del_client)
 
   def add_client(self, name, websocket):
     self.clients[name] = websocket
-
-  def get_client(self, name):
-    return self.clients[name]
-
-  def del_client(self, name):
-    del self.clients[name]
-
 
 def CORS():
 	cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
 	pass
 
 
-class ChatWebSocketHandler(WebSocket):
+class niftySocketHandler(WebSocket):
     def opened(self):
         cherrypy.engine.publish('add-client', self.username, self)
-        
-    def received_message(self, m):
-        text = m.data
-        if text.find("@") == -1:
-            # echo to all
-            cherrypy.engine.publish('websocket-broadcast', m)
-        else:
-            # or echo to a single user
-            left, message = text.rsplit(':', 1)
-            print left
-            from_username, to_username = left.split('@')
-            print repr(from_username), repr(to_username), repr(self.username)
-            client = cherrypy.engine.publish('get-client', to_username.strip()).pop()
-            print client
-            client.send("@@%s: %s" % (from_username.strip()[:-1], message.strip()))
-        
-    def closed(self, code, reason="A client left the room without a proper explanation."):
-        cherrypy.engine.publish('del-client', self.username)
-        cherrypy.engine.publish('websocket-broadcast', reason)
-
 
 class Nifty50(object):
 
 	@cherrypy.expose	
-	def index(self):
-		print ("Getting data.............")
-		
+	def index(self):		
 		status = self.getData()
 		return status
 
@@ -116,7 +83,6 @@ class Nifty50(object):
 
 	@cherrypy.expose
 	def ws(self, username):
-        # let's track the username we chose
 			cherrypy.request.ws_handler.username = username
 			cherrypy.log("Handler created: %s" % repr(cherrypy.request.ws_handler))
 	index.exposed = True
@@ -133,7 +99,7 @@ if __name__ == '__main__':
         },
     '/ws': {
             'tools.websocket.on': True,
-            'tools.websocket.handler_cls': ChatWebSocketHandler,
+            'tools.websocket.handler_cls': niftySocketHandler,
             'tools.websocket.protocols': ['zerodha']
             },
     }
@@ -144,7 +110,6 @@ if __name__ == '__main__':
                         'server.socket_port': 3000, # default port is 8080 you can chage default port number here
                        })
 	cherrypy.tools.CORS = cherrypy.Tool('before_handler', CORS)
-	ChatPlugin(cherrypy.engine).subscribe()
+	niftyWebSocketPlugin(cherrypy.engine).subscribe()
 	cherrypy.tools.websocket = WebSocketTool()
-	# Monitor(cherrypy.engine, background, frequency=30).subscribe()
 	cherrypy.quickstart(Nifty50(), '', conf)
