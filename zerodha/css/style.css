@@ -3,20 +3,19 @@ body{
   background-color: #5e7b9b;
 }
 .card{
-    width: 400px;
-    /* border: 1px solid white; */
-    box-shadow: 2px 2px 4px #fff;
-  /*  min-height: 250px;*/
-    padding-: 10px;
-    margin: 10px;
-    background: #fff;
+
+  width: 400px;
+  box-shadow: 2px 2px 4px #fff;
+  padding-: 10px;
+  margin: 10px;
+  background: #fff;
 }
 
 .title{
   font-weight: lighter;
-     text-align: center;
+  text-align: center;
   color: rgba(109, 109, 109, 0.64);
-    font-family: monospace;
+  font-family: monospace;
 }
 
 .desc{
@@ -24,8 +23,8 @@ body{
   font-family: segoe ui;
   line-height: 1.4em;
   font-size: 16px;
-    padding-top: 13px;
-    font-family: sans-serif;
+  padding-top: 13px;
+  font-family: sans-serif;
 }
 
 #mainbox{
@@ -33,58 +32,67 @@ body{
   box-sizing: border-box;
   justify-content: center;
   display: flex;
-flex-wrap: wrap;
+  flex-wrap: wrap;
 }
+
 .up i.fa.fa-arrow-up {
-    font-size: 17px;
-    color: green;
-    padding-left: 10px;
+  font-size: 17px;
+  color: green;
+  padding-left: 10px;
 }
+
 span.down {
-    font-size: 16px;
-    color: #f31c1c;
-    padding-left: 10px;
+  font-size: 16px;
+  color: #f31c1c;
+  padding-left: 10px;
 }
+
 .left {
-    width: 40%;
-    display: inline-block;
-    float: left;
-    padding: 10px;
-        font-size: 14px
+  width: 40%;
+  display: inline-block;
+  float: left;
+  padding: 10px;
+  font-size: 14px
 }
+
 .right {
-    width: 47%;
-    display: inline-block;
-    float: left;
-    padding: 10px;
-        font-size: 14px
+  width: 47%;
+  display: inline-block;
+  float: left;
+  padding: 10px;
+  font-size: 14px
 }
+
 .open {
-    width: 28%;
-    float: left;
-    display: inline-block;
-    padding: 10px;
-    font-size: 14px;
+  width: 28%;
+  float: left;
+  display: inline-block;
+  padding: 10px;
+  font-size: 14px;
 }
+
 .high {
-    width: 28%;
-    float: left;
-    display: inline-block;
-    padding: 10px;
-    font-size: 14px;
+  width: 28%;
+  float: left;
+  display: inline-block;
+  padding: 10px;
+  font-size: 14px;
 }
+
 .low {
-    width: 26%;
-    float: left;
-    display: inline-block;
-    padding: 10px;
-    font-size: 14px;
+  width: 26%;
+  float: left;
+  display: inline-block;
+  padding: 10px;
+  font-size: 14px;
 }
+
 span.date {
-    font-size: 12px;
-    color: black;
+  font-size: 12px;
+  color: black;
 }
+
 span.exdate {
-    font-size: 12px;
-    color: black;
+  font-size: 12px;
+  color: black;
 }
